@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Intelligent Registration System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * { box-sizing: border-box; font-family: Arial, sans-serif; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f3f4f6;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: #ffffff;
+            margin: 20px;
+            padding: 25px 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        input, select, textarea {
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .error-text {
+            font-size: 12px;
+            color: #b91c1c;
+            margin-top: 2px;
+            display: none;
+        }
+
+        .invalid input,
+        .invalid select,
+        .invalid textarea {
+            border-color: #b91c1c;
+            background: #fee2e2;
+        }
+
+        .password-meter {
+            height: 6px;
+            border-radius: 4px;
+            background: #e5e7eb;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .password-meter-fill {
+            height: 100%;
+            width: 0%;
+            background: #ef4444;
+            transition: width 0.2s;
+        }
+
+        .password-strength-label {
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .full-row {
+            grid-column: 1 / -1;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert {
+            grid-column: 1 / -1;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #ecfdf5;
+            color: #166534;
+            border: 1px solid #16a34a;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #ef4444;
+        }
+
+        .btn-row {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        button {
+            padding: 8px 18px;
+            border-radius: 999px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        #submitBtn {
+            background: #2563eb;
+            color: white;
+            opacity: 0.6;
+        }
+
+        #submitBtn:enabled {
+            opacity: 1;
+        }
+
+        #resetBtn {
+            background: #e5e7eb;
+        }
+
+        @media (max-width: 600px) {
+            .container { margin: 10px; padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Registration Form</h1>
+    <p class="subtitle">All * fields are mandatory</p>
+
+    <!-- Alert messages -->
+    <div id="topError" class="alert alert-error"></div>
+    <div id="topSuccess" class="alert alert-success"></div>
+
+    <form id="registrationForm" novalidate>
+        <div class="form-group">
+            <label for="firstName">First Name *</label>
+            <input type="text" id="firstName" name="firstName" required>
+            <span class="error-text">First name is required.</span>
+        </div>
+
+        <div class="form-group">
+            <label for="lastName">Last Name *</label>
+            <input type="text" id="lastName" name="lastName" required>
+            <span class="error-text">Last name is required.</span>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email *</label>
+            <input type="email" id="email" name="email" required>
+            <span class="error-text">Enter a valid non-disposable email.</span>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Phone Number *</label>
+            <input type="tel" id="phone" name="phone" required placeholder="+91XXXXXXXXXX">
+            <span class="error-text">Enter a valid phone number with country code.</span>
+        </div>
+
+        <div class="form-group">
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" min="0">
+            <span class="error-text"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Gender *</label>
+            <div class="checkbox-group">
+                <label><input type="radio" name="gender" value="Male"> Male</label>
+                <label><input type="radio" name="gender" value="Female"> Female</label>
+                <label><input type="radio" name="gender" value="Other"> Other</label>
+            </div>
+            <span class="error-text">Please select a gender.</span>
+        </div>
+
+        <div class="form-group full-row">
+            <label for="address">Address</label>
+            <textarea id="address" name="address"></textarea>
+            <span class="error-text"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="country">Country *</label>
+            <select id="country" name="country">
+                <option value="">Select Country</option>
+            </select>
+            <span class="error-text">Please select a country.</span>
+        </div>
+
+        <div class="form-group">
+            <label for="state">State *</label>
+            <select id="state" name="state">
+                <option value="">Select State</option>
+            </select>
+            <span class="error-text">Please select a state.</span>
+        </div>
+
+        <div class="form-group">
+            <label for="city">City *</label>
+            <select id="city" name="city">
+                <option value="">Select City</option>
+            </select>
+            <span class="error-text">Please select a city.</span>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password *</label>
+            <input type="password" id="password" name="password" required>
+            <div class="password-meter">
+                <div class="password-meter-fill" id="passwordMeter"></div>
+            </div>
+            <div class="password-strength-label" id="passwordStrength">Strength: -</div>
+            <span class="error-text">Password must be at least 6 characters.</span>
+        </div>
+
+        <div class="form-group">
+            <label for="confirmPassword">Confirm Password *</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required>
+            <span class="error-text">Passwords do not match.</span>
+        </div>
+
+        <div class="form-group full-row">
+            <label>Terms & Conditions *</label>
+            <div class="checkbox-group">
+                <input type="checkbox" id="terms">
+                <label for="terms">I agree to the Terms & Conditions.</label>
+            </div>
+            <span class="error-text">You must accept the Terms & Conditions.</span>
+        </div>
+
+        <div class="btn-row">
+            <button type="button" id="resetBtn">Reset</button>
+            <button type="submit" id="submitBtn" disabled>Submit</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    const locationData = {
+        "India": {
+            "Uttarakhand": ["Dehradun", "Haridwar"],
+            "Telangana": ["Hyderabad", "Warangal"]
+        },
+        "USA": {
+            "California": ["San Francisco", "Los Angeles"],
+            "New York": ["New York City", "Buffalo"]
+        }
+    };
+
+    const disposableDomains = ["tempmail.com", "10minutemail.com", "mailinator.com"];
+
+    const form = document.getElementById('registrationForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const topError = document.getElementById('topError');
+    const topSuccess = document.getElementById('topSuccess');
+
+    const countrySelect = document.getElementById('country');
+    const stateSelect = document.getElementById('state');
+    const citySelect = document.getElementById('city');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const passwordMeterFill = document.getElementById('passwordMeter');
+    const passwordStrengthLabel = document.getElementById('passwordStrength');
+    const termsCheckbox = document.getElementById('terms');
+
+    function populateCountries() {
+        Object.keys(locationData).forEach(country => {
+            const opt = document.createElement('option');
+            opt.value = country;
+            opt.textContent = country;
+            countrySelect.appendChild(opt);
+        });
+    }
+
+    function populateStates() {
+        stateSelect.innerHTML = '<option value="">Select State</option>';
+        citySelect.innerHTML = '<option value="">Select City</option>';
+        const country = countrySelect.value;
+        if (!country) return;
+
+        Object.keys(locationData[country]).forEach(state => {
+            const opt = document.createElement('option');
+            opt.value = state;
+            opt.textContent = state;
+            stateSelect.appendChild(opt);
+        });
+    }
+
+    function populateCities() {
+        citySelect.innerHTML = '<option value="">Select City</option>';
+        const country = countrySelect.value;
+        const state = stateSelect.value;
+        if (!country || !state) return;
+
+        locationData[country][state].forEach(city => {
+            const opt = document.createElement('option');
+            opt.value = city;
+            opt.textContent = city;
+            citySelect.appendChild(opt);
+        });
+    }
+
+    function evaluatePasswordStrength(pwd) {
+        let score = 0;
+        if (pwd.length >= 6) score++;
+        if (/[A-Z]/.test(pwd)) score++;
+        if (/[0-9]/.test(pwd)) score++;
+        if (/[^A-Za-z0-9]/.test(pwd)) score++;
+
+        let width = (score / 4) * 100;
+        passwordMeterFill.style.width = width + "%";
+
+        if (score <= 1) {
+            passwordMeterFill.style.background = "#ef4444";
+            passwordStrengthLabel.textContent = "Strength: Weak";
+        } else if (score === 2 || score === 3) {
+            passwordMeterFill.style.background = "#f97316";
+            passwordStrengthLabel.textContent = "Strength: Medium";
+        } else {
+            passwordMeterFill.style.background = "#16a34a";
+            passwordStrengthLabel.textContent = "Strength: Strong";
+        }
+    }
+
+    function setFieldError(groupElem, message) {
+        groupElem.classList.add('invalid');
+        const errorSpan = groupElem.querySelector('.error-text');
+        if (message) errorSpan.textContent = message;
+        errorSpan.style.display = 'block';
+    }
+
+    function clearFieldError(groupElem) {
+        groupElem.classList.remove('invalid');
+        const errorSpan = groupElem.querySelector('.error-text');
+        errorSpan.style.display = 'none';
+    }
+
+    function validateEmail(email) {
+        if (!email) return false;
+        const basicValid = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
+        if (!basicValid) return false;
+        const domain = email.split('@')[1].toLowerCase();
+        return !disposableDomains.includes(domain);
+    }
+
+    function validatePhone(phone) {
+        if (!phone) return false;
+        return /^\+\d{10,15}$/.test(phone);
+    }
+
+    function validateForm(showErrors = true) {
+        let valid = true;
+        topError.style.display = 'none';
+        topSuccess.style.display = 'none';
+
+        const firstGroup = document.getElementById('firstName').parentElement;
+        if (!form.firstName.value.trim()) {
+            valid = false;
+            if (showErrors) setFieldError(firstGroup, "First name is required.");
+        } else {
+            clearFieldError(firstGroup);
+        }
+
+        const lastGroup = document.getElementById('lastName').parentElement;
+        if (!form.lastName.value.trim()) {
+            valid = false;
+            if (showErrors) setFieldError(lastGroup, "Last name is required.");
+        } else {
+            clearFieldError(lastGroup);
+        }
+
+        const emailGroup = document.getElementById('email').parentElement;
+        if (!validateEmail(form.email.value.trim())) {
+            valid = false;
+            if (showErrors) setFieldError(emailGroup, "Enter a valid non-disposable email.");
+        } else {
+            clearFieldError(emailGroup);
+        }
+
+        const phoneGroup = document.getElementById('phone').parentElement;
+        if (!validatePhone(form.phone.value.trim())) {
+            valid = false;
+            if (showErrors) setFieldError(phoneGroup, "Enter a valid phone number with country code.");
+        } else {
+            clearFieldError(phoneGroup);
+        }
+
+        const genderGroup = document.querySelector('input[name="gender"]').closest('.form-group');
+        const anyGenderChecked = !!document.querySelector('input[name="gender"]:checked');
+        if (!anyGenderChecked) {
+            valid = false;
+            if (showErrors) setFieldError(genderGroup, "Please select a gender.");
+        } else {
+            clearFieldError(genderGroup);
+        }
+
+        const countryGroup = countrySelect.parentElement;
+        const stateGroup = stateSelect.parentElement;
+        const cityGroup = citySelect.parentElement;
+
+        if (!countrySelect.value) {
+            valid = false;
+            if (showErrors) setFieldError(countryGroup, "Please select a country.");
+        } else clearFieldError(countryGroup);
+
+        if (!stateSelect.value) {
+            valid = false;
+            if (showErrors) setFieldError(stateGroup, "Please select a state.");
+        } else clearFieldError(stateGroup);
+
+        if (!citySelect.value) {
+            valid = false;
+            if (showErrors) setFieldError(cityGroup, "Please select a city.");
+        } else clearFieldError(cityGroup);
+
+        const pwdGroup = passwordInput.parentElement;
+        if (passwordInput.value.length < 6) {
+            valid = false;
+            if (showErrors) setFieldError(pwdGroup, "Password must be at least 6 characters.");
+        } else {
+            clearFieldError(pwdGroup);
+        }
+
+        const confirmGroup = confirmPasswordInput.parentElement;
+        if (confirmPasswordInput.value !== passwordInput.value || !confirmPasswordInput.value) {
+            valid = false;
+            if (showErrors) setFieldError(confirmGroup, "Passwords do not match.");
+        } else {
+            clearFieldError(confirmGroup);
+        }
+
+        const termsGroup = termsCheckbox.closest('.form-group');
+        if (!termsCheckbox.checked) {
+            valid = false;
+            if (showErrors) setFieldError(termsGroup, "You must accept the Terms & Conditions.");
+        } else {
+            clearFieldError(termsGroup);
+        }
+
+        submitBtn.disabled = !valid;
+        return valid;
+    }
+
+    populateCountries();
+
+    countrySelect.addEventListener('change', () => {
+        populateStates();
+        validateForm(false);
+    });
+
+    stateSelect.addEventListener('change', () => {
+        populateCities();
+        validateForm(false);
+    });
+
+    citySelect.addEventListener('change', () => validateForm(false));
+
+    passwordInput.addEventListener('input', (e) => {
+        evaluatePasswordStrength(e.target.value);
+        validateForm(false);
+    });
+
+    confirmPasswordInput.addEventListener('input', () => validateForm(false));
+
+    Array.from(form.elements).forEach(el => {
+        if (['INPUT', 'SELECT', 'TEXTAREA'].includes(el.tagName)) {
+            el.addEventListener('input', () => validateForm(false));
+            el.addEventListener('change', () => validateForm(false));
+        }
+    });
+
+    termsCheckbox.addEventListener('change', () => validateForm(false));
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const valid = validateForm(true);
+
+        if (!valid) {
+            topSuccess.style.display = 'none';
+            topError.textContent = "❌ Please fix the highlighted fields and try again.";
+            topError.style.display = 'block';
+            return;
+        }
+
+        topError.style.display = 'none';
+        topSuccess.textContent = "✅ Registration Successful! Your profile has been submitted successfully.";
+        topSuccess.style.display = 'block';
+
+        form.reset();
+        stateSelect.innerHTML = '<option value="">Select State</option>';
+        citySelect.innerHTML = '<option value="">Select City</option>';
+        passwordMeterFill.style.width = "0%";
+        passwordStrengthLabel.textContent = "Strength: -";
+        submitBtn.disabled = true;
+    });
+
+    resetBtn.addEventListener('click', () => {
+        form.reset();
+        document.querySelectorAll('.invalid').forEach(elem => elem.classList.remove('invalid'));
+        document.querySelectorAll('.error-text').forEach(span => span.style.display = 'none');
+        topError.style.display = 'none';
+        topSuccess.style.display = 'none';
+        stateSelect.innerHTML = '<option value="">Select State</option>';
+        citySelect.innerHTML = '<option value="">Select City</option>';
+        passwordMeterFill.style.width = "0%";
+        passwordStrengthLabel.textContent = "Strength: -";
+        submitBtn.disabled = true;
+    });
+</script>
+</body>
+</html>
